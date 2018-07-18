@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2018 CERN.
+# Copyright (C) 2018 RERO.
 #
 # Invenio-Circulation is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -39,7 +40,10 @@ extras_require = {
     'sqlite': [
         'invenio-db[versioning]>=1.0.0b3',
     ],
-    'tests': tests_require,
+    'pygraphviz': [
+        'pygraphviz>=1.3.1'
+    ],
+    'tests': tests_require
 }
 
 extras_require['all'] = []
@@ -89,6 +93,9 @@ setup(
         ],
         'invenio_i18n.translations': [
             'messages = invenio_circulation',
+        ],
+        'flask.commands': [
+            'circulation = invenio_circulation.cli:circulation',
         ],
         # TODO: Edit these entry points to fit your needs.
         # 'invenio_access.actions': [],

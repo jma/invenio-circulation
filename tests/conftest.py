@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2018 CERN.
+# Copyright (C) 2018 RERO.
 #
 # Invenio-Circulation is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -16,6 +17,7 @@ from datetime import datetime
 
 import pytest
 from flask import Flask
+from flask.cli import ScriptInfo
 from flask_babelex import Babel
 from invenio_db import db as db_
 from invenio_db.ext import InvenioDB
@@ -40,6 +42,20 @@ def params():
     return dict(transaction_user_pid='user_pid', patron_pid='patron_pid',
                 item_pid='item_pid', transaction_location_pid='loc_pid',
                 transaction_date=now)
+
+
+@pytest.fixture
+def script_info(app):
+    """Get ScriptInfo object for testing CLI."""
+    return ScriptInfo(create_app=lambda info: app)
+
+
+@pytest.yield_fixture
+def diagram_file_name():
+    """Temporary digram file name."""
+    file_name = tempfile.mkstemp(prefix='test_diagram_', suffix='.png')[1]
+    yield file_name
+    os.remove(file_name)
 
 
 @pytest.yield_fixture(scope='session')

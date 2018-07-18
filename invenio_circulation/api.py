@@ -1,17 +1,26 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2018 CERN.
+# Copyright (C) 2018 RERO.
 #
 # Invenio-Circulation is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Circulation API."""
 
+import warnings
 from datetime import datetime
 
 from flask import current_app
 from invenio_records.api import Record
 from transitions import Machine
+
+DIAGRAM_ENABLED = True
+try:
+    import pygraphviz
+    from transitions.extensions import GraphMachine
+except ImportError:
+    DIAGRAM_ENABLED = False
 
 STATES = ['CREATED', 'PENDING', 'ITEM_ON_LOAN', 'ITEM_RETURNED',
           'ITEM_IN_TRANSIT', 'ITEM_AT_DESK']
@@ -101,3 +110,16 @@ class Loan(Record):
         else:
             self['state'] = self.state
             self.commit()
+
+    @classmethod
+    def export_diagram(cls, output_file):
+        """."""
+        if not DIAGRAM_ENABLED:
+            warnings.warn('dependency not found, please install pygraphviz to '
+                          'export the circulation state diagram.')
+            return False
+        m = GraphMachine(states=STATES, transitions=TRANSITIONS,
+                         initial=STATES[0], show_conditions=True,
+                         title='Circulation State Diagram')
+        m.get_graph().draw(output_file, prog='dot')
+        return True
