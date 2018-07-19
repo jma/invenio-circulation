@@ -24,5 +24,6 @@ def circulation():
 def diagram(output_file_name):
     """Save the circulation state diagram to a png file."""
     from .api import Loan
+
     if not Loan.export_diagram(output_file_name):
         raise click.Abort()

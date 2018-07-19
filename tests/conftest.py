@@ -29,6 +29,7 @@ from invenio_records_rest.views import create_blueprint_from_app
 from invenio_search.ext import InvenioSearch
 from sqlalchemy_utils.functions import create_database, database_exists
 
+from invenio_circulation.api import Loan
 from invenio_circulation.ext import InvenioCirculation
 
 
@@ -40,13 +41,23 @@ def instance_path():
     shutil.rmtree(path)
 
 
+@pytest.yield_fixture()
+def loan(db):
+    """Minimal Loan object."""
+    yield Loan.create({})
+
+
 @pytest.fixture()
 def params():
     """."""
     now = datetime.now().strftime('%Y-%m-%d')
-    return dict(transaction_user_pid='user_pid', patron_pid='patron_pid',
-                item_pid='item_pid', transaction_location_pid='loc_pid',
-                transaction_date=now)
+    return dict(
+        transaction_user_pid='user_pid',
+        patron_pid='patron_pid',
+        item_pid='item_pid',
+        transaction_location_pid='loc_pid',
+        transaction_date=now,
+    )
 
 
 @pytest.fixture

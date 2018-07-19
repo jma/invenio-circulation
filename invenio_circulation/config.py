@@ -8,12 +8,25 @@
 
 """Invenio module for the circulation of bibliographic items."""
 
-from .utils import is_checkout_valid, item_location_retriever
+
+from .utils import is_checkin_valid, is_checkout_valid, is_request_valid, \
+    is_request_validate_valid, item_location_retriever
 
 CIRCULATION_ITEM_LOCATION_RETRIEVER = item_location_retriever
 """."""
 
-CIRCULATION_POLICIES = dict(checkout=is_checkout_valid)
+CIRCULATION_DEFAULT_REQUEST_DURATION = 30
+"""."""
+
+CIRCULATION_DEFAULT_LOAN_DURATION = 30
+"""."""
+
+CIRCULATION_POLICIES = dict(
+    checkout=is_checkout_valid,
+    checkin=is_checkin_valid,
+    request=is_request_valid,
+    validate_request=is_request_validate_valid,
+)
 """."""
 
 _CIRCULATION_LOAN_PID_TYPE = 'loanid'
