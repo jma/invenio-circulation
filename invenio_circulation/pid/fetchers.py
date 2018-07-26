@@ -10,7 +10,7 @@
 
 from invenio_pidstore.fetchers import FetchedPID
 
-from invenio_circulation.config import _CIRCULATION_LOAN_PID_TYPE
+from ..config import _CIRCULATION_LOAN_PID_TYPE
 
 
 def loanid_fetcher(record_uuid, data):

@@ -41,14 +41,19 @@ extras_require = {
     'elasticsearch6': [
         'invenio-search[elasticsearch6]>={}'.format(invenio_search_version)
     ],
-    'docs': ['Sphinx>=1.5.1'],
-    'mysql': ['invenio-db[mysql,versioning]>={}'.format(invenio_db_version)],
+    'docs': [
+        'Sphinx>=1.5.1'
+    ],
+    'mysql': [
+        'invenio-db[mysql,versioning]>={}'.format(invenio_db_version)
+    ],
     'postgresql': [
         'invenio-db[postgresql,versioning]>={}'.format(invenio_db_version)
     ],
-    'sqlite': ['invenio-db[versioning]>={}'.format(invenio_db_version)],
-    'pygraphviz': ['pygraphviz>=1.3.1'],
-    'tests': tests_require,
+    'sqlite': [
+        'invenio-db[versioning]>={}'.format(invenio_db_version)
+    ],
+    'tests': tests_require
 }
 
 extras_require['all'] = []
@@ -68,8 +73,8 @@ setup_requires = ['Babel>=1.3', 'pytest-runner>=2.6.2']
 
 install_requires = [
     'Flask-BabelEx>=0.9.3',
-    'transitions>=0.6.8',
     'invenio-base>=1.0.1',
+    'invenio-logging>=1.0.0',
     'invenio-pidstore>=1.0.0',
     'invenio-records>=1.0.0',
     'invenio-records-rest>=1.1.2',
@@ -101,9 +106,6 @@ setup(
     include_package_data=True,
     platforms='any',
     entry_points={
-        'flask.commands': [
-            'circulation = invenio_circulation.cli:circulation'
-        ],
         'invenio_base.apps': [
             'invenio_circulation = invenio_circulation:InvenioCirculation'
         ],

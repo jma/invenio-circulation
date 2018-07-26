@@ -20,7 +20,6 @@ from os.path import dirname, join
 import pytest
 from elasticsearch.exceptions import RequestError
 from flask import Flask
-from flask.cli import ScriptInfo
 from flask_babelex import Babel
 from helpers import create_loan
 from invenio_db import db as db_
@@ -49,7 +48,7 @@ def instance_path():
 
 
 @pytest.yield_fixture()
-def loan(db):
+def loan_created(db):
     """Minimal Loan object."""
     yield Loan.create({})
 
@@ -65,20 +64,6 @@ def params():
         transaction_location_pid='loc_pid',
         transaction_date=now,
     )
-
-
-@pytest.fixture
-def script_info(app):
-    """Get ScriptInfo object for testing CLI."""
-    return ScriptInfo(create_app=lambda info: app)
-
-
-@pytest.yield_fixture
-def diagram_file_name():
-    """Temporary digram file name."""
-    file_name = tempfile.mkstemp(prefix='test_diagram_', suffix='.png')[1]
-    yield file_name
-    os.remove(file_name)
 
 
 @pytest.yield_fixture()
@@ -107,9 +92,8 @@ def base_app(instance_path):
         SECRET_KEY='SECRET_KEY',
         SQLALCHEMY_DATABASE_URI=os.environ.get(
             'SQLALCHEMY_DATABASE_URI', 'sqlite://'
-        ),  # in memory
+        ),  # NOTE: in memory
         SQLALCHEMY_TRACK_MODIFICATIONS=True,
-        # No permission checking
         RECORDS_REST_DEFAULT_READ_PERMISSION_FACTORY=None,
         TESTING=True,
         JSONSCHEMAS_ENDPOINT='/schema',
@@ -131,8 +115,8 @@ def app(base_app):
     InvenioPIDStore(base_app)
     InvenioSearch(base_app)
     InvenioCirculation(base_app)
-    base_app.register_blueprint(create_blueprint_from_app(base_app))
     InvenioJSONSchemas(base_app)
+    base_app.register_blueprint(create_blueprint_from_app(base_app))
     with base_app.app_context():
         yield base_app
 

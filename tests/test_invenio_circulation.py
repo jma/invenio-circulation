@@ -24,7 +24,7 @@ def test_version():
 def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
-    ext = InvenioCirculation(app)
+    InvenioCirculation(app)
     assert 'invenio-circulation' in app.extensions
 
     app = Flask('testapp')

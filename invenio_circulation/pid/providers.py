@@ -11,7 +11,7 @@
 from invenio_pidstore.models import PIDStatus
 from invenio_pidstore.providers.recordid import RecordIdProvider
 
-from invenio_circulation.config import _CIRCULATION_LOAN_PID_TYPE
+from ..config import _CIRCULATION_LOAN_PID_TYPE
 
 
 class CirculationLoanIdProvider(RecordIdProvider):

@@ -8,8 +8,8 @@
 
 """Circulation minters."""
 
-from invenio_circulation.config import _CIRCULATION_LOAN_PID_TYPE
-from invenio_circulation.pid.providers import CirculationLoanIdProvider
+from ..config import _CIRCULATION_LOAN_PID_TYPE
+from .providers import CirculationLoanIdProvider
 
 
 def loanid_minter(record_uuid, data):
