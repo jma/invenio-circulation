@@ -18,6 +18,11 @@ def item_location_retriever(item_pid):
     pass
 
 
+def is_item_available(item_pid):
+    """."""
+    return True
+
+
 def is_checkout_valid(
     transaction_user_pid,
     patron_pid,

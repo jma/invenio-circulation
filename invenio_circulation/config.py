@@ -12,8 +12,19 @@ from .api import Loan
 from .transitions.transitions import ItemOnLoanToItemInTransitHouse, \
     ItemOnLoanToItemReturned, PendingToItemAtDesk, \
     PendingToItemInTransitPickup
-from .utils import is_checkin_valid, is_checkout_valid, is_request_valid, \
-    is_request_validate_valid, item_location_retriever
+from .utils import is_checkin_valid, is_checkout_valid, is_item_available, \
+    is_request_valid, is_request_validate_valid, item_location_retriever
+
+_CIRCULATION_LOAN_PID_TYPE = 'loan_pid'
+"""."""
+
+_CIRCULATION_LOAN_MINTER = 'loan_pid'
+"""."""
+
+_CIRCULATION_LOAN_FETCHER = 'loan_pid'
+"""."""
+
+CIRCULATION_STATES_ITEM_AVAILABLE = ['ITEM_RETURNED']
 
 CIRCULATION_LOAN_TRANSITIONS = {
     'CREATED': [
@@ -66,16 +77,8 @@ CIRCULATION_POLICIES = dict(
     checkin=is_checkin_valid,
     request=is_request_valid,
     validate_request=is_request_validate_valid,
+    item_available=is_item_available
 )
-"""."""
-
-_CIRCULATION_LOAN_PID_TYPE = 'loan_pid'
-"""."""
-
-_CIRCULATION_LOAN_MINTER = 'loan_pid'
-"""."""
-
-_CIRCULATION_LOAN_FETCHER = 'loan_pid'
 """."""
 
 CIRCULATION_REST_ENDPOINTS = dict(

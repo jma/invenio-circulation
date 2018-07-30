@@ -10,7 +10,7 @@
 
 import pytest
 
-from invenio_circulation.api import Loan
+from invenio_circulation.api import Loan, is_item_available
 from invenio_circulation.errors import NoValidTransitionAvailable
 from invenio_circulation.proxies import current_circulation
 
@@ -142,6 +142,17 @@ def test_conditional_checkout(loan, app, db, params):
         loan.checkout(**dict(end_date='2020-01-xx', **params))
 
 
+@pytest.mark.skip(reason="Add duration policy in checkout")
+def test_conditional_checkout_with_other_loans(indexed_loans, params):
+    """Test checkout with some conditions."""
+
+    loan = Loan.create({})
+    loan.checkout(**dict(params, item_pid='item_on_loan_2'))
+    assert loan.state == 'CREATED'
+    loan.checkout(**dict(params, item_pid='item_returned_3'))
+    assert loan.state == 'ITEM_ON_LOAN'
+
+
 @pytest.mark.skip(reason="Add duration policy in checking")
 def test_conditional_checkin(loan, app, db, params):
     """Test checkin with some conditions."""
@@ -187,3 +198,31 @@ def test_conditional_request(loan, app, db, params):
 def test_indexed_loans(indexed_loans):
     """Test mappings, index creation and loans indexing."""
     assert indexed_loans
+
+
+def test_get_loans(indexed_loans):
+    """Test retrive loan list given belonging to an item."""
+    loans = list(Loan.get_loans(item_pid='item_pending_1'))
+    assert loans
+    assert len(loans) == 1
+    assert loans[0].get('item_pid') == 'item_pending_1'
+
+    loans = list(
+        Loan.get_loans(
+            item_pid='item_multiple_pending_on_loan_7',
+            exclude_states=['ITEM_ON_LOAN'],
+        )
+    )
+    assert len(loans) == 2
+
+
+def test_item_availibility(indexed_loans):
+    """Test item_availibility with various conditions."""
+    assert not is_item_available(item_pid='item_pending_1')
+    assert not is_item_available(item_pid='item_on_loan_2')
+    assert is_item_available(item_pid='item_returned_3')
+    assert not is_item_available(item_pid='item_in_transit_4')
+    assert not is_item_available(item_pid='item_at_desk_5')
+    assert not is_item_available(item_pid='item_pending_on_loan_6')
+    assert is_item_available(item_pid='item_returned_6')
+    assert is_item_available(item_pid='no_loan')

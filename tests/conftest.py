@@ -144,7 +144,7 @@ def json_headers(app):
 @pytest.yield_fixture(scope='session')
 def test_data():
     """Load test records."""
-    path = 'data/testloans.json'
+    path = 'data/loans.json'
     with open(join(dirname(__file__), path)) as fp:
         loans = json.load(fp)
     yield loans
