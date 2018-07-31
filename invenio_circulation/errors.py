@@ -21,6 +21,10 @@ class InvalidState(CirculationException):
     """State not found in circulation configuration."""
 
 
+class TransitionPoliciesViolation(CirculationException):
+    """Policies for the transition failed at loan state."""
+
+
 class TransitionConditionsFailed(CirculationException):
     """Conditions for the transition failed at loan state."""
 

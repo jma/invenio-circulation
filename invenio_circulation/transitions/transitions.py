@@ -18,24 +18,29 @@ from ..transitions.conditions import is_same_location
 from ..utils import parse_date
 
 
-def _ensure_valid_loan_duration(loan):
+def _ensure_valid_loan(loan):
     """Validate start and end dates for a loan."""
     loan.setdefault('start_date', loan['transaction_date'])
-
-    if not loan.get('end_date'):
+    start_date = parse_date(loan.get('start_date'))
+    end_date = parse_date(loan.get('end_date'))
+    if not end_date:
         get_loan_duration = current_app.config['CIRCULATION_POLICIES'][
             'checkout']['duration_default']
         number_of_days = get_loan_duration(loan)
-        loan['end_date'] = loan['start_date'] + timedelta(days=number_of_days)
+        end_date = start_date + timedelta(days=number_of_days)
 
-    is_duration_valid = current_app.config['CIRCULATION_POLICIES']['checkout'][
-        'duration_validate']
-    if not is_duration_valid(loan):
+    if end_date < start_date:
         msg = 'The loan duration from `{0}` to `{1}` is not valid'.format(
             loan['start_date'],
             loan['end_date']
         )
         raise TransitionConstraintsViolation(msg=msg)
+
+    is_valid = current_app.config['CIRCULATION_POLICIES']['checkout'][
+        'validate']
+    assert is_valid(loan, start_date, end_date)
+    loan['start_date'] = start_date.isoformat()
+    loan['end_date'] = end_date.isoformat()
 
 
 class CreatedToPending(Transition):
@@ -57,17 +62,11 @@ class CreatedToItemOnLoan(Transition):
     def before(self, loan, **kwargs):
         """Validate checkout action."""
         super(CreatedToItemOnLoan, self).before(loan, **kwargs)
-        if loan.get('start_date'):
-            loan['start_date'] = parse_date(loan['start_date'])
-        if loan.get('end_date'):
-            loan['end_date'] = parse_date(loan['end_date'])
 
-        _ensure_valid_loan_duration(loan)
+        _ensure_valid_loan(loan)
 
     def after(self, loan):
         """Convert dates to string before saving loan."""
-        loan['start_date'] = loan['start_date'].isoformat()
-        loan['end_date'] = loan['end_date'].isoformat()
         super(CreatedToItemOnLoan, self).after(loan)
 
 
@@ -111,8 +110,6 @@ class ItemAtDeskToItemOnLoan(Transition):
 
     def after(self, loan):
         """Convert dates to string before saving loan."""
-        loan['start_date'] = loan['start_date'].isoformat()
-        loan['end_date'] = loan['end_date'].isoformat()
         super(ItemAtDeskToItemOnLoan, self).after(loan)
 
 
@@ -133,7 +130,7 @@ class ItemOnLoanToItemInTransitHouse(Transition):
 
     def after(self, loan):
         """Convert dates to string before saving loan."""
-        loan['end_date'] = loan['end_date'].isoformat()
+        # loan['end_date'] = loan['end_date'].isoformat()
         super(ItemOnLoanToItemInTransitHouse, self).after(loan)
 
 
@@ -154,5 +151,5 @@ class ItemOnLoanToItemReturned(Transition):
 
     def after(self, loan):
         """Convert dates to string before saving loan."""
-        loan['end_date'] = loan['end_date'].isoformat()
+        # loan['end_date'] = loan['end_date'].isoformat()
         super(ItemOnLoanToItemReturned, self).after(loan)

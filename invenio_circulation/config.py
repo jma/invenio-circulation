@@ -15,8 +15,7 @@ from .transitions.transitions import CreatedToItemOnLoan, CreatedToPending, \
     ItemOnLoanToItemReturned, PendingToItemAtDesk, \
     PendingToItemInTransitPickup
 from .utils import get_default_loan_duration, is_item_available, \
-    is_loan_duration_valid, item_exists, item_location_retriever, \
-    patron_exists
+    is_loan_valid, item_exists, item_location_retriever, patron_exists
 
 _CIRCULATION_LOAN_PID_TYPE = 'loan_pid'
 """."""
@@ -87,7 +86,7 @@ CIRCULATION_ITEM_LOCATION_RETRIEVER = item_location_retriever
 CIRCULATION_POLICIES = dict(
     checkout=dict(
         duration_default=get_default_loan_duration,
-        duration_validate=is_loan_duration_valid,
+        validate=is_loan_valid,
         item_available=is_item_available
     ),
 )

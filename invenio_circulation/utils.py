@@ -8,9 +8,11 @@
 
 """Circulation API."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import ciso8601
+
+from .errors import TransitionPoliciesViolation
 
 
 def patron_exists(patron_pid):
@@ -38,12 +40,22 @@ def get_default_loan_duration(loan):
     return 30
 
 
-def is_loan_duration_valid(loan):
-    """Validate the loan duration."""
-    return loan['end_date'] > loan['start_date'] and \
-        loan['end_date'] - loan['start_date'] < timedelta(days=60)
+def is_loan_valid(loan, start_date, end_date):
+    """Validate the loan duration.
+
+    :param start_date: :class:`~datetime.datetime` instance.
+    :param end_date: :class:`~datetime.datetime` instance.
+    """
+    loan_duration = end_date - start_date
+    if loan_duration > timedelta(days=60):
+        raise TransitionPoliciesViolation('Loan duration too long')
+    return True
 
 
-def parse_date(str_date):
+def parse_date(date_datetime_or_str):
     """Parse string date with timezone and return a datetime object."""
-    return ciso8601.parse_datetime(str_date)
+    if not date_datetime_or_str:
+        return date_datetime_or_str
+    if isinstance(date_datetime_or_str, datetime):
+        return date_datetime_or_str
+    return ciso8601.parse_datetime(date_datetime_or_str)

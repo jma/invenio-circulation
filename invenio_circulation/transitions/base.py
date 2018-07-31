@@ -102,7 +102,9 @@ class Transition(object):
     def before(self, loan, **kwargs):
         """Validate input, evaluate conditions and raise if failed."""
         kwargs.setdefault('transaction_date', datetime.now())
-        kwargs['transaction_date'] = parse_date(kwargs['transaction_date'])
+        kwargs['transaction_date'] = parse_date(
+            kwargs['transaction_date']
+        ).isoformat()
         loan.update(kwargs)
 
     def execute(self, loan, **kwargs):
@@ -113,6 +115,5 @@ class Transition(object):
 
     def after(self, loan):
         """Commit record and index."""
-        loan['transaction_date'] = loan['transaction_date'].isoformat()
         loan.commit()
         # TODO: save to db and index loan here???
